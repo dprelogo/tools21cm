@@ -1,3 +1,9 @@
+import os
+os.environ["OMP_NUM_THREADS"] = '24' # export OMP_NUM_THREADS=4
+os.environ["OPENBLAS_NUM_THREADS"] = '24' # export OPENBLAS_NUM_THREADS=4
+os.environ["MKL_NUM_THREADS"] = '24' # export MKL_NUM_THREADS=6
+#os.environ["VECLIB_MAXIMUM_THREADS"] = '4' # export VECLIB_MAXIMUM_THREADS=4
+#os.environ["NUMEXPR_NUM_THREADS"] = '4' # export NUMEXPR_NUM_THREADS=6
 import argparse
 parser = argparse.ArgumentParser(prog = 'uv for i-th redshift')
 parser.add_argument('--zi', type=int, default=0, choices=range(2107))
@@ -25,6 +31,6 @@ redshifts_mean = (redshifts[:-1] + redshifts[1:]) / 2
 # print(redshifts_mean.shape)
 
 # uv, N_ant = t2c.noise_model.make_uv_map_lightcone(ncells=200, zs=redshifts_mean, boxsize=300)
-uv, N_ant = t2c.noise_mode.get_uv_map(ncells=200, zs=redshifts_mean[inputs.zi], boxsize=300)
+uv, N_ant = t2c.noise_model.get_uv_map(ncells=200, z=redshifts_mean[inputs.zi], boxsize=300)
 print(N_ant)
 np.save(f'uv_{inputs.zi}.npy', uv)
