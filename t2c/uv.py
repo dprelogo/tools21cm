@@ -1,9 +1,3 @@
-import os
-os.environ["OMP_NUM_THREADS"] = '24' # export OMP_NUM_THREADS=4
-os.environ["OPENBLAS_NUM_THREADS"] = '24' # export OPENBLAS_NUM_THREADS=4
-os.environ["MKL_NUM_THREADS"] = '24' # export MKL_NUM_THREADS=6
-#os.environ["VECLIB_MAXIMUM_THREADS"] = '4' # export VECLIB_MAXIMUM_THREADS=4
-#os.environ["NUMEXPR_NUM_THREADS"] = '4' # export NUMEXPR_NUM_THREADS=6
 import argparse
 parser = argparse.ArgumentParser(prog = 'uv for i-th redshift')
 parser.add_argument('--zi', type=int, default=0, choices=range(2107))
