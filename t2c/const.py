@@ -62,7 +62,7 @@ def set_omega_lambda(value):
 	'''
 	Define new omega lambda value.
 	'''
-	global lam
+	global lam, OmegaL
 	lam = value 
 	OmegaL = value
 

@@ -65,8 +65,8 @@ def noise_map(ncells, z, depth_mhz, obs_time=1000, filename=None, boxsize=None, 
 	noise_arr  = noise_real + 1.j*noise_imag
 	noise_four = apply_uv_response_noise(noise_arr, uv_map)
 	if fft_wrap: noise_map  = ifft2_wrap(noise_four)*np.sqrt(int_time/3600./obs_time)
-	else: noise_map  = np.fft.ifft2(noise_four)*np.sqrt(int_time/3600./obs_time)
-	return np.real(noise_map)
+	else: noise_map = noise_four*np.sqrt(int_time/3600./obs_time)
+	return noise_map
 
 def apply_uv_response_noise(noise, uv_map):
 	'''
@@ -202,7 +202,7 @@ def make_uv_map_lightcone(ncells, zs, filename=None, total_int_time=6., int_time
 		z = zs[i]
 		uv_map, N_ant = get_uv_map(ncells, z, filename=filename, total_int_time=total_int_time, int_time=int_time, boxsize=boxsize, declination=declination, verbose=verbose)
 		uv_lc[:,:,i] = uv_map
-		print("\nThe lightcone has been constructed upto %.1f \%" %(i*percc))
+		print(f"\nThe lightcone has been constructed upto {i*percc:.1f} perc")
 	return uv_lc, N_ant
 
 def telescope_response_on_coeval(array, z, depth_mhz=None, obs_time=1000, filename=None, boxsize=None, total_int_time=6., int_time=10., declination=-30., uv_map=np.array([]), N_ant=None):
