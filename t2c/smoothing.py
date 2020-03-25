@@ -278,7 +278,7 @@ def interpolate2d(input_array, x, y, order=0):
 	
 	return new_array
 
-def smooth_lightcone(lightcone, z_array, box_size_mpc=False, max_baseline=2., ratio=1.):
+def smooth_lightcone(lightcone, z_array, box_size_mpc=False, max_baseline=2., ratio=1., redshift_smooth = False):
 	"""
 	This smooths in both angular and frequency direction assuming both to be smoothed by same scale.
 
@@ -309,7 +309,11 @@ def smooth_lightcone(lightcone, z_array, box_size_mpc=False, max_baseline=2., ra
 	output_dz      = ratio*output_ang_res/const.c
 	for i in range(len(output_dz)):
 		output_dz[i] = output_dz[i] * hubble_parameter(input_redshifts[i])
-	output_lightcone = smooth_lightcone_tophat(lightcone, input_redshifts, output_dz)
+	if redshift_smooth == False:
+		output_lightcone = lightcone
+	else:
+		output_lightcone = smooth_lightcone_tophat(lightcone, input_redshifts, output_dz)
+	
 	output_lightcone = smooth_lightcone_gauss(output_lightcone, output_ang_res*lightcone.shape[0]/box_size_mpc)
 	return output_lightcone, input_redshifts
 
