@@ -62,7 +62,7 @@ def noise_map(ncells, z, depth_mhz, obs_time=1000, filename=None, boxsize=None, 
 	if not N_ant: N_ant = np.loadtxt(filename, dtype=str).shape[0]
 	sigma, rms_noi = kanan_noise_image_ska(z, uv_map, depth_mhz, obs_time, int_time, N_ant_ska=N_ant, verbose=False)
 	noise_real = RState.normal(loc=0.0, scale=rms_noi, size=(ncells, ncells))
-	noise_imag = Rstate.normal(loc=0.0, scale=rms_noi, size=(ncells, ncells))
+	noise_imag = RState.normal(loc=0.0, scale=rms_noi, size=(ncells, ncells))
 	noise_arr  = noise_real + 1.j*noise_imag
 	noise_four = apply_uv_response_noise(noise_arr, uv_map)
 	if fft_wrap: noise_map  = ifft2_wrap(noise_four)*np.sqrt(int_time/3600./obs_time)
