@@ -14,7 +14,7 @@ from . import cosmology as cm
 from . import smoothing as sm
 import scipy
 
-def noise_map(ncells, z, depth_mhz, obs_time=1000, filename=None, boxsize=None, total_int_time=6., int_time=10., declination=-30., uv_map=np.array([]), N_ant=None, verbose=True, fft_wrap=False):
+def noise_map(ncells, z, depth_mhz, obs_time=1000, filename=None, boxsize=None, total_int_time=6., int_time=10., declination=-30., uv_map=np.array([]), N_ant=None, verbose=True, fft_wrap=False, seed=None):
 	"""
 	@ Ghara et al. (2017), Giri et al. (2018b)
 
@@ -56,12 +56,13 @@ def noise_map(ncells, z, depth_mhz, obs_time=1000, filename=None, boxsize=None, 
 	noise_map: ndarray
 		A 2D slice of the interferometric noise at that frequency (in muJy).
 	"""
+	RState = np.random.RandomState(seed=seed)
 	if not filename: N_ant = SKA1_LowConfig_Sept2016().shape[0]
 	if not uv_map.size: uv_map, N_ant  = get_uv_map(ncells, z, filename=filename, total_int_time=total_int_time, int_time=int_time, boxsize=boxsize, declination=declination)
 	if not N_ant: N_ant = np.loadtxt(filename, dtype=str).shape[0]
 	sigma, rms_noi = kanan_noise_image_ska(z, uv_map, depth_mhz, obs_time, int_time, N_ant_ska=N_ant, verbose=False)
-	noise_real = np.random.normal(loc=0.0, scale=rms_noi, size=(ncells, ncells))
-	noise_imag = np.random.normal(loc=0.0, scale=rms_noi, size=(ncells, ncells))
+	noise_real = RState.normal(loc=0.0, scale=rms_noi, size=(ncells, ncells))
+	noise_imag = Rstate.normal(loc=0.0, scale=rms_noi, size=(ncells, ncells))
 	noise_arr  = noise_real + 1.j*noise_imag
 	noise_four = apply_uv_response_noise(noise_arr, uv_map)
 	if fft_wrap: noise_map  = ifft2_wrap(noise_four)*np.sqrt(int_time/3600./obs_time)
