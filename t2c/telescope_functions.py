@@ -138,40 +138,47 @@ def get_uv_daily_observation(ncells, z, filename=None, total_int_time=4., int_ti
 	return uv_map, N_ant
 	
 
-def get_uv_coverage(Nbase, z, ncells, boxsize=None):
-	"""
-	It calculated the uv_map for the uv-coverage.
+# def get_uv_coverage(Nbase, z, ncells, boxsize=None):
+# 	"""
+# 	It calculated the uv_map for the uv-coverage.
 
-	Parameters
-	----------
-	Nbase   : ndarray
-		The array containing all the ux,uy,uz values of the antenna configuration.
-	z       : float
-		Redhsift of the slice observed.
-	ncells  : int
-		The number of cell used to make the image.
-	boxsize : float
-		The comoving size of the sky observed. Default: It is determined from the simulation constants set.
-	Returns
-	-------
-	uv_map  : ndarray
-		ncells x ncells numpy array containing the number of baselines observing each pixel.
-	"""
+# 	Parameters
+# 	----------
+# 	Nbase   : ndarray
+# 		The array containing all the ux,uy,uz values of the antenna configuration.
+# 	z       : float
+# 		Redhsift of the slice observed.
+# 	ncells  : int
+# 		The number of cell used to make the image.
+# 	boxsize : float
+# 		The comoving size of the sky observed. Default: It is determined from the simulation constants set.
+# 	Returns
+# 	-------
+# 	uv_map  : ndarray
+# 		ncells x ncells numpy array containing the number of baselines observing each pixel.
+# 	"""
+# 	z = float(z)
+# 	if not boxsize: boxsize = conv.LB
+# 	uv_map = np.zeros((ncells,ncells))
+# 	theta_max = boxsize/cm.z_to_cdist(z)
+# 	Nb  = np.round(Nbase*theta_max/2)
+# 	Nb  = Nb[(Nb[:,0]<ncells/2)]
+# 	Nb  = Nb[(Nb[:,1]<ncells/2)]
+# 	Nb  = Nb[(Nb[:,2]<ncells/2)]
+# 	Nb  = Nb[(Nb[:,0]>=-ncells/2)]
+# 	Nb  = Nb[(Nb[:,1]>=-ncells/2)]
+# 	Nb  = Nb[(Nb[:,2]>=-ncells/2)]
+# 	xx,yy,zz = Nb[:,0], Nb[:,1], Nb[:,2]
+# 	for p in range(xx.shape[0]): uv_map[int(xx[p]),int(yy[p])] += 1
+# 	return uv_map
+def get_uv_coverage(baselines, z, ncells, boxsize):
 	z = float(z)
 	if not boxsize: boxsize = conv.LB
-	uv_map = np.zeros((ncells,ncells))
-	theta_max = boxsize/cm.z_to_cdist(z)
-	Nb  = np.round(Nbase*theta_max/2)
-	Nb  = Nb[(Nb[:,0]<ncells/2)]
-	Nb  = Nb[(Nb[:,1]<ncells/2)]
-	Nb  = Nb[(Nb[:,2]<ncells/2)]
-	Nb  = Nb[(Nb[:,0]>=-ncells/2)]
-	Nb  = Nb[(Nb[:,1]>=-ncells/2)]
-	Nb  = Nb[(Nb[:,2]>=-ncells/2)]
-	xx,yy,zz = Nb[:,0], Nb[:,1], Nb[:,2]
-	for p in range(xx.shape[0]): uv_map[int(xx[p]),int(yy[p])] += 1
-	return uv_map
-
+    box_size_radians = boxsize / cm.z_to_cdist(z)
+    u = np.fft.fftshift(np.fft.fftfreq(ncells, d=box_size_radians/ncells))
+    u = np.concatenate((u, u[-1] + u[-1] - u[-2]))
+    out = np.hist2d(baselines[:,:2], bins=u)[0]
+    return out
 
 def kanan_noise_image_ska(z, uv_map, depth_mhz, obs_time, int_time, N_ant_ska=564., verbose=True):
 	"""
