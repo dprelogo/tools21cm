@@ -176,7 +176,7 @@ def get_uv_coverage(baselines, z, ncells, boxsize):
 	# if not boxsize: boxsize = conv.LB
 	box_size_radians = boxsize / cm.z_to_cdist(z)
 	u = np.fft.fftshift(np.fft.fftfreq(ncells, d=box_size_radians/ncells))
-	u = np.concatenate((u, u[-1] + u[-1] - u[-2]))
+	u = np.concatenate((u, np.expand_dims(u[-1] + u[-1] - u[-2], axis = 0)), axis = 0)
 	out = np.hist2d(baselines[:,:2], bins=u)[0]
 	return out
 
