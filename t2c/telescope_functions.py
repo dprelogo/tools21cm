@@ -178,7 +178,7 @@ def get_uv_coverage(baselines, z, ncells, boxsize):
 	u = np.fft.fftshift(np.fft.fftfreq(ncells, d=box_size_radians/ncells))
 	u = np.concatenate((u, np.expand_dims(u[-1] + u[-1] - u[-2], axis = 0)), axis = 0)
 	out = np.histogram2d(baselines[:, 0], baselines[:, 1], bins=u)[0]
-	return out
+	return np.fft.ifftshift(out)
 
 def kanan_noise_image_ska(z, uv_map, depth_mhz, obs_time, int_time, N_ant_ska=564., verbose=True):
 	"""
