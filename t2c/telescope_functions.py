@@ -1,4 +1,5 @@
 import numpy as np
+import cupy as cp
 import itertools
 import sys
 from .usefuls import *
@@ -206,10 +207,12 @@ def kanan_noise_image_ska(z, uv_map, depth_mhz, obs_time, int_time, N_ant_ska=56
 	rms_noise : float
 		The rms of the noise due to the antenna positions in uv field.
 	"""
+	xp = cp.get_array_module(uv_map)
+
 	z = float(z)
 	nuso  = 1420.0/(1.0 + z)
 	delnu = depth_mhz*1e3	                                            # in kHz
-	effective_baseline = np.sum(uv_map)
+	effective_baseline = xp.sum(uv_map)
 	T_sys_atnu300MHz= 60.0  					    #K
 	T_sys = T_sys_atnu300MHz*(300.0/nuso)**2.55
 	ant_radius_ska  = 35./2. 	                                    #in m

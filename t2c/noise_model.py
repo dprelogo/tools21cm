@@ -6,6 +6,7 @@ Methods:
 '''
 
 import numpy as np
+import cupy as cp
 import sys
 from .telescope_functions import *
 from .usefuls import *
@@ -56,10 +57,9 @@ def noise_map(ncells, z, depth_mhz, obs_time=1000, filename=None, boxsize=None, 
 	noise_map: ndarray
 		A 2D slice of the interferometric noise at that frequency (in muJy).
 	"""
-	RState = np.random.RandomState(seed=seed)
-	if not filename: N_ant = SKA1_LowConfig_Sept2016().shape[0]
-	if not uv_map.size: uv_map, N_ant  = get_uv_map(ncells, z, filename=filename, total_int_time=total_int_time, int_time=int_time, boxsize=boxsize, declination=declination)
-	if not N_ant: N_ant = np.loadtxt(filename, dtype=str).shape[0]
+	xp = cp.get_array_module(uv_map)
+	RState = xp.random.RandomState(seed=seed)
+
 	sigma, rms_noi = kanan_noise_image_ska(z, uv_map, depth_mhz, obs_time, int_time, N_ant_ska=N_ant, verbose=False)
 	noise_real = RState.normal(loc=0.0, scale=rms_noi, size=(ncells, ncells))
 	noise_imag = RState.normal(loc=0.0, scale=rms_noi, size=(ncells, ncells))
@@ -78,12 +78,13 @@ def apply_uv_response_noise(noise, uv_map):
 	return out
 
 def ifft2_wrap(nn1):
+	xp = cp.get_array_module(nn1)
 	assert nn1.ndim==2
-	bla0 = np.vstack((nn1,nn1))
-	bla1 = np.roll(bla0, nn1.shape[0]/2, 0)
-	bla2 = np.hstack((bla1,bla1))
-	bla3 = np.roll(bla2, nn1.shape[1]/2, 1)
-	imap = np.fft.ifft2(bla3)
+	bla0 = xp.vstack((nn1,nn1))
+	bla1 = xp.roll(bla0, nn1.shape[0]/2, 0)
+	bla2 = xp.hstack((bla1,bla1))
+	bla3 = xp.roll(bla2, nn1.shape[1]/2, 1)
+	imap = xp.fft.ifft2(bla3)
 	return imap[nn1.shape[0]/2:-nn1.shape[0]/2,nn1.shape[1]/2:-nn1.shape[1]/2]
 
 def telescope_response_on_image(array, z, depth_mhz, obs_time=1000, filename=None, boxsize=None, total_int_time=6., int_time=10., declination=-30., uv_map=np.array([]), N_ant=None):
