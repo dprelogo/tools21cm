@@ -15,6 +15,6 @@ setup(name='tools21cm',
       package_dir = {'tools21cm' : 't2c'},
       packages=['tools21cm'],
       package_data={'share':['*'],},
-      install_requires=['numpy','scipy','scikit-learn','scikit-image', 'cupy-cuda101'],
+      install_requires=['numpy','scipy','scikit-learn','scikit-image', 'cupy'],
       #include_package_data=True,
 )
