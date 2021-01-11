@@ -20,6 +20,10 @@ if os.system('nvidia-smi') == False:
       output = stream.read()
       index = output.find(identifier) + len(identifier)
       cupy_package = "cupy-cuda" + output[index:index + 4].replace(".", "")
+      print(output)
+      print(index)
+      print(output[index:index + 4].replace(".", ""))
+      print(cupy_package)
 else:
       cupy_package = "cupy"
 req_packages.append(cupy_package)
