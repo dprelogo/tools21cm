@@ -10,18 +10,18 @@ from distutils.core import setup
 req_packages = ['numpy','scipy','scikit-learn','scikit-image']
 #adding cupy if there's cuda
 import os
-cuda_version = input("Enter cuda version (e.g. 110 for 11.0), empty for automatic determination\n")
-if cuda_version != '':
-      cupy_package = "cupy-cuda" + cuda_version
+# cuda_version = input("Enter cuda version (e.g. 110 for 11.0), empty for automatic determination\n")
+# if cuda_version != '':
+#       cupy_package = "cupy-cuda" + cuda_version
+# else:
+if os.system('nvidia-smi') == False:
+      identifier = "CUDA Version: "
+      stream = os.popen(f"nvidia-smi | grep {identifier}")
+      output = stream.read()
+      index = output.find(identifier) + len(identifier)
+      cupy_package = "cupy-cuda" + output[index:index + 4].replace(".", "")
 else:
-      if os.system('nvidia-smi') == False:
-            identifier = "CUDA Version: "
-            stream = os.popen(f"nvidia-smi | grep {identifier}")
-            output = stream.read()
-            index = output.find(identifier) + len(identifier)
-            cupy_package = "cupy-cuda" + output[index:index + 4].replace(".", "")
-      else:
-            cupy_package = "cupy"
+      cupy_package = "cupy"
 req_packages.append(cupy_package)
 
 setup(name='tools21cm',
